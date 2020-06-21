@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import check_rabbit_federation
-from pynagios import make_option, Response, CRITICAL, OK
+from pycinga import Response, CRITICAL, OK
 from base_rabbit_check import BaseRabbitCheck
 import string
 
@@ -20,8 +20,8 @@ class RabbitCheckFederation(BaseRabbitCheck):
       else:
         self.url = "http://%s:%s/api/federation-links" % (self.options.hostname, self.options.port)
         return True
-    except Exception, e:
-      print str(e)
+    except Exception as e:
+      print(str(e))
       self.rabbit_error = 3
       self.rabbit_note = "problem forming api url:", e
       return False

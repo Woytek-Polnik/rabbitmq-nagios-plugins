@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-from pynagios import Plugin, make_option, Response, CRITICAL, UNKNOWN
+from argparse import ArgumentParser
+from pycinga import Plugins, Response, CRITICAL, UNKNOWN
 from base_rabbit_check import BaseRabbitCheck
 import json
 
 class RabbitAllQueuesCheck(BaseRabbitCheck):
 
-    vhost = make_option("--vhost", dest="vhost", help="RabbitMQ vhost", type="string", default='%2F')
+    parser = ArgumentParser(add_help=False)
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
 
     def makeUrl(self):
         """
@@ -17,7 +19,7 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
             else:
                 self.url = "http://%s:%s/api/queues/%s" % (self.options.hostname, self.options.port, self.options.vhost)
             return True
-        except Exception, e:
+        except Exception as e:
             self.rabbit_error = 3
             self.rabbit_note = "problem forming api url:", e
         return False
@@ -29,7 +31,7 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
             else:
                 self.url = "http://%s:%s/api/queues/%s/%s" % (self.options.hostname, self.options.port, self.options.vhost, queueName)
             return True
-        except Exception, e:
+        except Exception as e:
             self.rabbit_error = 3
             self.rabbit_note = "problem forming api url:", e
         return False

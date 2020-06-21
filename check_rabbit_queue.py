@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pynagios import make_option
+from argparse import ArgumentParser
 from base_rabbit_check import BaseRabbitCheck
 
 
@@ -9,8 +9,9 @@ class RabbitQueueCheck(BaseRabbitCheck):
     attempts to catch all errors. expected usage is with a critical threshold of 0
     """
 
-    vhost = make_option("--vhost", dest="vhost", help="RabbitMQ vhost", type="string", default='%2F')
-    queue = make_option("--queue", dest="queue", help="Name of the queue in inspect", type="string")
+    parser = ArgumentParser(add_help=False)
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
+    parser.add_argument("--queue", dest="queue", help="Name of the queue in inspect", type=str)
 
     def makeUrl(self):
         """
@@ -22,7 +23,7 @@ class RabbitQueueCheck(BaseRabbitCheck):
             else:
                 self.url = "http://%s:%s/api/queues/%s/%s" % (self.options.hostname, self.options.port, self.options.vhost, self.options.queue)
             return True
-        except Exception, e:
+        except Exception as e:
             self.rabbit_error = 3
             self.rabbit_note = "problem forming api url:", e
         return False

@@ -1,8 +1,13 @@
 import abc
-import urllib2
 import json
-from pynagios import Plugin, make_option, Response, CRITICAL, UNKNOWN
+import sys
+from argparse import ArgumentParser
+from pycinga import Plugin, Response, CRITICAL, UNKNOWN
 
+if sys.version_info >= (3, 0):
+    import urllib
+else:
+    import urllib2
 
 class BaseRabbitCheck(Plugin):
     """
@@ -10,10 +15,11 @@ class BaseRabbitCheck(Plugin):
     attempts to catch all errors. expected usage is with a critical threshold of 0
     """
 
-    username = make_option("--username", dest="username", help="RabbitMQ API username", type="string", default="guest")
-    password = make_option("--password", dest="password", help="RabbitMQ API password", type="string", default="guest")
-    port = make_option("--port", dest="port", help="RabbitMQ API port", type="string", default="15672")
-    use_ssl = make_option("--ssl", action="store_true", dest="use_ssl", default=False, help="Use SSL")
+    parser = ArgumentParser(add_help=False)
+    parser.add_argument("--username", help="RabbitMQ API username", type=str, default="guest")
+    parser.add_argument("--password", help="RabbitMQ API password", type=str, default="guest")
+    parser.add_argument("--port", help="RabbitMQ API port", type=str, default="15672")
+    parser.add_argument("--ssl", dest="use_ssl", action="store_true", default=False, help="Use SSL")
 
     def doApiGet(self):
         """
@@ -29,7 +35,7 @@ class BaseRabbitCheck(Plugin):
             request = opener.open(self.url)
             response = request.read()
             request.close()
-        except Exception, e:
+        except Exception as e:
             response = False
             self.rabbit_error = 2
             self.rabbit_note = "problem with api get:" + str(e)
@@ -42,7 +48,7 @@ class BaseRabbitCheck(Plugin):
         """
         try:
             data = json.loads(response)
-        except Exception, e:
+        except Exception as e:
             data = None
             self.rabbit_error = 4
             self.rabbit_note = "problem with json parse:", e
@@ -73,9 +79,15 @@ class BaseRabbitCheck(Plugin):
             self.rabbit_note = "action performed successfully"
 
             if not self.testOptions():
-                return Response(UNKNOWN, "Incorrect check config" + self.rabbit_note)
+                return Response(UNKNOWN, "Incorrect check config, " + self.rabbit_note)
 
-            if not self.options.hostname or not self.options.port or not self.options.username or not self.options.password or not self.testOptions():
+            if (
+                not self.options.hostname
+                or not self.options.port
+                or not self.options.username
+                or not self.options.password
+                or not self.testOptions()
+            ):
                 return Response(UNKNOWN, "Incorrect missing options")
 
             if not self.makeUrl():

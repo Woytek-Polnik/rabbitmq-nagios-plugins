@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from pynagios import make_option, Response, CRITICAL, OK
+from argparse import ArgumentParser
+from pycinga import Response, CRITICAL, OK
 from base_rabbit_check import BaseRabbitCheck
 
 
@@ -9,7 +10,8 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
     attempts to catch all errors. expected usage is with a critical threshold of 0
     """
 
-    vhost = make_option("--vhost", dest="vhost", help="RabbitMQ vhost", type="string", default='%2F')
+    parser = ArgumentParser(add_help=False)
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
 
     def makeUrl(self):
         """
@@ -21,7 +23,7 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
             else:
                 self.url = "http://%s:%s/api/aliveness-test/%s" % (self.options.hostname, self.options.port, self.options.vhost)
             return True
-        except Exception, e:
+        except Exception as e:
             self.rabbit_error = 3
             self.rabbit_note = "problem forming api url:", e
         return False

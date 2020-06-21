@@ -3,7 +3,8 @@ rabbitmq-nagios-plugins
 
 Set of python based rabbitmq plugins.  To install:
 
-easy_install pynagios
+#### python
+easy_install pycinga
 
 copy these scripts into $NAGIOS_HOME/libexec/
 
