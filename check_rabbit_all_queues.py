@@ -47,11 +47,11 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
     def parseResult(self, data):
             if data.get('messages'):
                     result = self.response_for_value(data['messages'])
-                    result.message = ' found ' + str(data['messages']) + ' messages'
+                    result.message = ' found ' + str(data['messages']) + ' messages ' + str(data['name'])
                     self.rabbit_note = ' found ' + str(data['messages']) + ' messages'
             else:
                     result = self.response_for_value(0)
-                    result.message = ' No messages found in queue'
+                    result.message = ' No messages found in queue ' + str(data['name'])
                     self.rabbit_note = result.message
             return result
 
@@ -86,6 +86,9 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
                 return Response(UNKNOWN, "Error with URL")
 
             response = self.parseJson(self.doApiGet())
+
+            if response is None:
+                return Response(UNKNOWN, "The server did not respond")
 
             for queue in response: 
                 self.generateQueueUrl(queue["name"])
