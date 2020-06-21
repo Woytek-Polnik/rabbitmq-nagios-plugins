@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import abc
 import json
 import sys
@@ -5,9 +6,10 @@ from argparse import ArgumentParser
 from pycinga import Plugin, Response, CRITICAL, UNKNOWN
 
 if sys.version_info >= (3, 0):
-    import urllib
+    import urllib.request as urllib
 else:
-    import urllib2
+    import urllib2 as urllib
+
 
 class BaseRabbitCheck(Plugin):
     """
@@ -25,10 +27,10 @@ class BaseRabbitCheck(Plugin):
         """
         performs and returns content from an api get
         """
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        password_mgr = urllib.HTTPPasswordMgrWithDefaultRealm()
         password_mgr.add_password(None, self.url, self.options.username, self.options.password)
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-        opener = urllib2.build_opener(handler)
+        handler = urllib.HTTPBasicAuthHandler(password_mgr)
+        opener = urllib.build_opener(handler)
 
         response = None
         try:
