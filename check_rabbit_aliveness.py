@@ -11,7 +11,7 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
     """
 
     parser = ArgumentParser(add_help=False)
-    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default="%2F")
 
     def makeUrl(self):
         """
@@ -19,9 +19,17 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
         """
         try:
             if self.options.use_ssl is True:
-                self.url = "https://%s:%s/api/aliveness-test/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "https://%s:%s/api/aliveness-test/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             else:
-                self.url = "http://%s:%s/api/aliveness-test/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "http://%s:%s/api/aliveness-test/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             return True
         except Exception as e:
             self.rabbit_error = 3
@@ -41,9 +49,9 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
         return result
 
     def parseResult(self, data):
-        if data['status'] == 'ok':
+        if data["status"] == "ok":
             return Response(OK, "Response status was ok")
-        return Response(CRITICAL, data['status'])
+        return Response(CRITICAL, data["status"])
 
 
 if __name__ == "__main__":

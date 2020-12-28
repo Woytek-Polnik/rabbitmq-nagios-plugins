@@ -11,16 +11,21 @@ class RabbitCheckServer(BaseRabbitCheck):
         self.percentage = 0
 
     """
-    performs a nagios compliant check on a single queue and
-    attempts to catch all errors. expected usage is with a critical threshold of 0
+    performs a nagios compliant check on a single node and
+    attempts to gather requested metric type.
     """
 
     parser = ArgumentParser(add_help=False)
-    parser.add_argument("--type", help="Type of check - mem, fd, proc, sockets, disk, network_partitions", type=str, default="%2F")
+    parser.add_argument(
+        "--type",
+        help="Type of check - mem, fd, proc, sockets, disk, network_partitions",
+        type=str,
+        default="%2F",
+    )
 
     def makeUrl(self):
         """
-        forms self.url, a correct url to polling a rabbit queue
+        forms self.url, a correct url to polling a rabbit nodes
         """
         try:
             if self.options.use_ssl is True:

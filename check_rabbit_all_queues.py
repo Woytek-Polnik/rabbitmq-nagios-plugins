@@ -4,10 +4,11 @@ from pycinga import Plugins, Response, CRITICAL, UNKNOWN
 from base_rabbit_check import BaseRabbitCheck
 import json
 
+
 class RabbitAllQueuesCheck(BaseRabbitCheck):
 
     parser = ArgumentParser(add_help=False)
-    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default="%2F")
 
     def makeUrl(self):
         """
@@ -15,9 +16,17 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
         """
         try:
             if self.options.use_ssl is True:
-                self.url = "https://%s:%s/api/queues/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "https://%s:%s/api/queues/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             else:
-                self.url = "http://%s:%s/api/queues/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "http://%s:%s/api/queues/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             return True
         except Exception as e:
             self.rabbit_error = 3
@@ -27,9 +36,19 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
     def generateQueueUrl(self, queueName):
         try:
             if self.options.use_ssl is True:
-                self.url = "https://%s:%s/api/queues/%s/%s" % (self.options.hostname, self.options.port, self.options.vhost, queueName)
+                self.url = "https://%s:%s/api/queues/%s/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                    queueName,
+                )
             else:
-                self.url = "http://%s:%s/api/queues/%s/%s" % (self.options.hostname, self.options.port, self.options.vhost, queueName)
+                self.url = "http://%s:%s/api/queues/%s/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                    queueName,
+                )
             return True
         except Exception as e:
             self.rabbit_error = 3
@@ -45,26 +64,33 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
         return True
 
     def parseResult(self, data):
-            if data.get('messages'):
-                    result = self.response_for_value(data['messages'])
-                    result.message = ' found ' + str(data['messages']) + ' messages ' + str(data['name'])
-                    self.rabbit_note = ' found ' + str(data['messages']) + ' messages'
-            else:
-                    result = self.response_for_value(0)
-                    result.message = ' No messages found in queue ' + str(data['name'])
-                    self.rabbit_note = result.message
-            return result
+        if data.get("messages"):
+            result = self.response_for_value(data["messages"])
+            result.message = " found " + str(data["messages"]) + " messages " + str(data["name"])
+            self.rabbit_note = " found " + str(data["messages"]) + " messages"
+        else:
+            result = self.response_for_value(0)
+            result.message = " No messages found in queue " + str(data["name"])
+            self.rabbit_note = result.message
+        return result
 
     def setPerformanceData(self, data, result, queue):
 
-        if data.get('messages'):
-                result.set_perf_data(queue + ".messages", data['messages'], warn=self.options.warning, crit=self.options.critical)
-                result.set_perf_data(queue + ".rate", data['messages_details']['rate'])
-                result.set_perf_data(queue + ".consumers", data['consumers'], crit='0')
+        if data.get("messages"):
+            result.set_perf_data(
+                queue + ".messages",
+                data["messages"],
+                warn=self.options.warning,
+                crit=self.options.critical,
+            )
+            result.set_perf_data(queue + ".rate", data["messages_details"]["rate"])
+            result.set_perf_data(queue + ".consumers", data["consumers"], crit="0")
         else:
-                result.set_perf_data(queue + ".messages", 0, warn=self.options.warning, crit=self.options.critical)
-                result.set_perf_data(queue + ".rate", 0)
-                result.set_perf_data(queue + ".consumers", data['consumers'], crit='0')
+            result.set_perf_data(
+                queue + ".messages", 0, warn=self.options.warning, crit=self.options.critical
+            )
+            result.set_perf_data(queue + ".rate", 0)
+            result.set_perf_data(queue + ".consumers", data["consumers"], crit="0")
 
         return result
 
@@ -79,7 +105,13 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
             if not self.testOptions():
                 return Response(UNKNOWN, "Incorrect check config" + self.rabbit_note)
 
-            if not self.options.hostname or not self.options.port or not self.options.username or not self.options.password or not self.testOptions():
+            if (
+                not self.options.hostname
+                or not self.options.port
+                or not self.options.username
+                or not self.options.password
+                or not self.testOptions()
+            ):
                 return Response(UNKNOWN, "Incorrect missing options")
 
             if not self.makeUrl():
@@ -90,7 +122,7 @@ class RabbitAllQueuesCheck(BaseRabbitCheck):
             if response is None:
                 return Response(UNKNOWN, "The server did not respond")
 
-            for queue in response: 
+            for queue in response:
                 self.generateQueueUrl(queue["name"])
 
                 if self.rabbit_error > 0:

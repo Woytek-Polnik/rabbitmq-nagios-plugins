@@ -10,7 +10,7 @@ class RabbitVhostCheck(BaseRabbitCheck):
     """
 
     parser = ArgumentParser(add_help=False)
-    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default='%2F')
+    parser.add_argument("--vhost", help="RabbitMQ vhost", type=str, default="%2F")
 
     def makeUrl(self):
         """
@@ -18,9 +18,17 @@ class RabbitVhostCheck(BaseRabbitCheck):
         """
         try:
             if self.options.use_ssl is True:
-                self.url = "https://%s:%s/api/vhosts/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "https://%s:%s/api/vhosts/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             else:
-                self.url = "http://%s:%s/api/vhosts/%s" % (self.options.hostname, self.options.port, self.options.vhost)
+                self.url = "http://%s:%s/api/vhosts/%s" % (
+                    self.options.hostname,
+                    self.options.port,
+                    self.options.vhost,
+                )
             return True
         except Exception as e:
             self.rabbit_error = 3
@@ -36,14 +44,14 @@ class RabbitVhostCheck(BaseRabbitCheck):
         return True
 
     def setPerformanceData(self, data, result):
-        result.set_perf_data(self.vhost + ".messages", data['messages'])
-        result.set_perf_data(self.vhost + ".rate", data['messages_details']['rate'])
+        result.set_perf_data(self.vhost + ".messages", data["messages"])
+        result.set_perf_data(self.vhost + ".rate", data["messages_details"]["rate"])
         result.set_perf_data("rabbit_error", self.rabbit_error)
         return result
 
     def parseResult(self, data):
         self.vhost = self.options.vhost
-        result = self.response_for_value(data['messages'])
+        result = self.response_for_value(data["messages"])
         result.message = self.rabbit_note
         return result
 

@@ -67,7 +67,9 @@ class RabbitConnectionsCheck(BaseRabbitCheck):
             send_rate += d.get("send_oct_details", {}).get("rate", 0)
 
         try:
-            not_running_connections_rate = not_running_connections_count / (connections_count / 100.0)
+            not_running_connections_rate = not_running_connections_count / (
+                connections_count / 100.0
+            )
         except ZeroDivisionError:
             not_running_connections_rate = 0
         try:
@@ -83,7 +85,10 @@ class RabbitConnectionsCheck(BaseRabbitCheck):
         self.ok_connections_rate = ok_connections_rate
 
         message = "CHECK completed - connections_running ({0}, {1}%), connections_not_running ({2}, {3}%)".format(
-            ok_connections_count, ok_connections_rate, not_running_connections_count, not_running_connections_rate
+            ok_connections_count,
+            ok_connections_rate,
+            not_running_connections_count,
+            not_running_connections_rate,
         )
 
         return self.response_for_value(not_running_connections_rate, message)

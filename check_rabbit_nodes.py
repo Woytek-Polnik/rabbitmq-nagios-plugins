@@ -6,8 +6,7 @@ from base_rabbit_check import BaseRabbitCheck
 
 class RabbitNodesCheck(BaseRabbitCheck):
     """
-    performs a nagios compliant check on partition status
-    attempts to catch all errors. expected usage is with a critical threshold of 0
+    performs a nagios compliant check on nodes count
     """
 
     parser = ArgumentParser(add_help=False)
@@ -40,7 +39,9 @@ class RabbitNodesCheck(BaseRabbitCheck):
     def parseResult(self, data):
         if len(data) == self.options.nodes:
             return Response(OK, "%i Nodes present" % self.options.nodes)
-        return Response(CRITICAL, "Nodes expected %i, but found %i" % (self.options.nodes, len(data)))
+        return Response(
+            CRITICAL, "Nodes expected %i, but found %i" % (self.options.nodes, len(data))
+        )
 
 
 if __name__ == "__main__":

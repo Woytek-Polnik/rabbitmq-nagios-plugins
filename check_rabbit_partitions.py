@@ -39,8 +39,8 @@ class RabbitPartionsCheck(BaseRabbitCheck):
 
     def parseResult(self, data):
         for node in data:
-            if len(node['partitions']) != 0:
-                return Response(CRITICAL, 'Partition found %s' % node['name'])
+            if len(node["partitions"]) != 0:
+                return Response(CRITICAL, "Partition found %s" % node["name"])
         return Response(OK, "No partitions found")
 
 
