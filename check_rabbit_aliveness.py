@@ -6,8 +6,7 @@ from base_rabbit_check import BaseRabbitCheck
 
 class RabbitAlivenessCheck(BaseRabbitCheck):
     """
-    performs a nagios compliant check on a single queue and
-    attempts to catch all errors. expected usage is with a critical threshold of 0
+    performs a single rabbitmq build in aliveness-test
     """
 
     parser = ArgumentParser(add_help=False)
@@ -15,7 +14,7 @@ class RabbitAlivenessCheck(BaseRabbitCheck):
 
     def makeUrl(self):
         """
-        forms self.url, a correct url to polling a rabbit queue
+        forms self.url, a correct url to polling a rabbit aliveness
         """
         try:
             if self.options.use_ssl is True:
